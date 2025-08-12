@@ -7,7 +7,7 @@ Start containerlab as usual (`sudo clab deploy`). The extended stat counters can
 # Example PBR setup
 
 Start iperf3 on h3-1:
-```
+```bash
 docker exec -it clab-ibr-h3-1 bash
 h3-1:/$ iperf3 -s
 -----------------------------------------------------------

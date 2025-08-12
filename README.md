@@ -2,7 +2,7 @@
 Uses an enhanced version of the danet gnmi-target (https://code.fbi.h-da.de/danet/gnmi-target) installed and running in the provided FRR container image (https://hub.docker.com/r/flex/frr-gnmi-target).
 
 # Running the testbed
-Start containerlab as usual (`sudo clab deploy`). The extended stat counters can be retrieved, e.g., using gnmic:
+Start containerlab as usual (`sudo clab deploy`). The extended stat counters can be retrieved, e.g., using gnmic or directly from the consoles of the containers.
 
 # Example PBR setup
 

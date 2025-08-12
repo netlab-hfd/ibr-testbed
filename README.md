@@ -30,7 +30,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 [  5]   2.50-3.00   sec   786 MBytes  13.2 Gbits/sec
 ```
 
-Start `set-tc.sh` on the host and run the iperf3 client again to see the traffic shaper limiting the shortest path to 1 Mbit/s:
+Start `set-tc.sh` on the host and run the iperf3 client again to see the traffic shaper limiting the shortest path (h1-1 <-> r1 <-> r3 <-> h3-1, see [topology](viewport-containerlab-ibr.svg)) to 1 Mbit/s:
 ```
 h1-1:/$ iperf3 -R -i.5 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201

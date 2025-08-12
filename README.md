@@ -16,7 +16,7 @@ Server listening on 5201
 ```
 
 Run iperf3 cient on h1-1:
-```
+```bash
 h1-1:/$ iperf3 -R -i.5 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
 Reverse mode, remote host 192.168.13.101 is sending
@@ -31,7 +31,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 ```
 
 Run `set-tc.sh` on the host and run the iperf3 client again to see the traffic shaper limiting the shortest path (h1-1 <-> r1 <-> r3 <-> h3-1, see [topology](viewport-containerlab-ibr.svg)) to 1 Mbit/s:
-```
+```bash
 h1-1:/$ iperf3 -R -i.5 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
 Reverse mode, remote host 192.168.13.101 is sending
@@ -52,7 +52,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 ```
 
 Run `set-pbr.sh` to route traffic from TCP source port 10000 over h2 offering 2 Mbit/s on the path h1-1 <-> r1 <-> r2 <-> r3 <-> h3-1:
-```
+```bash
 h1-1:/$ iperf3 -R --cport 10000 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
 Reverse mode, remote host 192.168.13.101 is sending
@@ -72,7 +72,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 ```
 
 Using iperf3 -P 2 we can use both paths for the application to achieve 3 Mbit/s:
-```
+```bash
 h1-1:/$ iperf3 -R --cport 10000 -P 2 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
 Reverse mode, remote host 192.168.13.101 is sending
@@ -99,7 +99,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 ```
 
 After also running `set-pbr-2.sh`, TCP traffic from source port 10002 will be routed over r4 and r5 (single link currently) adding 4 Mbit/s achieving a total sum of 7 Mbit/s across all three paths:
-```
+```bash
 h1-1:/$ iperf3 -R --cport 10000 -P 3 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
 Reverse mode, remote host 192.168.13.101 is sending
@@ -135,12 +135,12 @@ PBR and traffic shaping can be removed by running `remove-pbr-2-hop.sh`, `remove
 # Using gnmic to get gNMI stats
 
 Mgmt Interface of r1, also counting gnmic pkts:
-```
+```bash
 gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth0]/state/counters/in-octets
 ```
 
 Regular r1 interfaces:
-```
+```bash
 gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth1]/state/counters/in-octets
 gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth3]/state/counters/in-octets
 gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth4]/state/counters/in-octets
@@ -148,12 +148,12 @@ gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /interface
 ```
 
 All gNMI info from r1:
-```
+```bash
 gnmic -a clab-ibr-r1:7030 -u admin -p admsdsdin --insecure get --path /
 ```
 
 r3 interface eth1:
-```
+```bash
 gnmic -a clab-ibr-r3:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth1]/state/counters/in-octets
 ```
 

@@ -30,7 +30,7 @@ Reverse mode, remote host 192.168.13.101 is sending
 [  5]   2.50-3.00   sec   786 MBytes  13.2 Gbits/sec
 ```
 
-Start `set-tc.sh` on the host and run the iperf3 client again to see the traffic shaper limiting the shortest path (h1-1 <-> r1 <-> r3 <-> h3-1, see [topology](viewport-containerlab-ibr.svg)) to 1 Mbit/s:
+Run `set-tc.sh` on the host and run the iperf3 client again to see the traffic shaper limiting the shortest path (h1-1 <-> r1 <-> r3 <-> h3-1, see [topology](viewport-containerlab-ibr.svg)) to 1 Mbit/s:
 ```
 h1-1:/$ iperf3 -R -i.5 -c 192.168.13.101
 Connecting to host 192.168.13.101, port 5201
@@ -49,9 +49,88 @@ Reverse mode, remote host 192.168.13.101 is sending
 [ ID] Interval           Transfer     Bitrate         Retr
 [  5]   0.00-10.68  sec  3.03 MBytes  2.38 Mbits/sec    1             sender
 [  5]   0.00-10.00  sec  1.27 MBytes  1.07 Mbits/sec                  receiver
-
-iperf Done.
 ```
+
+Run `set-pbr.sh` to route traffic from TCP source port 10000 over h2 offering 2 Mbit/s on the path h1-1 <-> r1 <-> r2 <-> r3 <-> h3-1:
+```
+h1-1:/$ iperf3 -R --cport 10000 -c 192.168.13.101
+Connecting to host 192.168.13.101, port 5201
+Reverse mode, remote host 192.168.13.101 is sending
+[  5] local 192.168.11.101 port 10000 connected to 192.168.13.101 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   255 KBytes  2.09 Mbits/sec
+[  5]   1.00-2.00   sec   244 KBytes  1.99 Mbits/sec
+[  5]   2.00-3.00   sec   240 KBytes  1.96 Mbits/sec
+...
+[  5]   7.00-8.00   sec   240 KBytes  1.97 Mbits/sec
+[  5]   8.00-9.00   sec   240 KBytes  1.97 Mbits/sec
+[  5]   9.00-10.00  sec   240 KBytes  1.97 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.04  sec  3.73 MBytes  3.12 Mbits/sec    1             sender
+[  5]   0.00-10.00  sec  2.38 MBytes  2.00 Mbits/sec                  receiver
+```
+
+Using iperf3 -P 2 we can use both paths for the application to achieve 3 Mbit/s:
+```
+h1-1:/$ iperf3 -R --cport 10000 -P 2 -c 192.168.13.101
+Connecting to host 192.168.13.101, port 5201
+Reverse mode, remote host 192.168.13.101 is sending
+[  5] local 192.168.11.101 port 10000 connected to 192.168.13.101 port 5201
+[  7] local 192.168.11.101 port 10001 connected to 192.168.13.101 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   369 KBytes  3.03 Mbits/sec
+[  7]   0.00-1.00   sec   212 KBytes  1.74 Mbits/sec
+[SUM]   0.00-1.00   sec   582 KBytes  4.76 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   1.00-2.00   sec   240 KBytes  1.97 Mbits/sec
+[  7]   1.00-2.00   sec   120 KBytes   985 Kbits/sec
+[SUM]   1.00-2.00   sec   360 KBytes  2.95 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   2.00-3.00   sec   240 KBytes  1.97 Mbits/sec
+[  7]   2.00-3.00   sec   120 KBytes   979 Kbits/sec
+[SUM]   2.00-3.00   sec   359 KBytes  2.94 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   3.00-4.00   sec   249 KBytes  2.04 Mbits/sec
+[  7]   3.00-4.00   sec   120 KBytes   983 Kbits/sec
+[SUM]   3.00-4.00   sec   369 KBytes  3.02 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+...
+```
+
+After also running `set-pbr-2.sh`, TCP traffic from source port 10002 will be routed over r4 and r5 (single link currently) adding 4 Mbit/s achieving a total sum of 7 Mbit/s across all three paths:
+```
+h1-1:/$ iperf3 -R --cport 10000 -P 3 -c 192.168.13.101
+Connecting to host 192.168.13.101, port 5201
+Reverse mode, remote host 192.168.13.101 is sending
+[  5] local 192.168.11.101 port 10000 connected to 192.168.13.101 port 5201
+[  7] local 192.168.11.101 port 10001 connected to 192.168.13.101 port 5201
+[  9] local 192.168.11.101 port 10002 connected to 192.168.13.101 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   369 KBytes  3.03 Mbits/sec
+[  7]   0.00-1.00   sec   212 KBytes  1.74 Mbits/sec
+[  9]   0.00-1.00   sec   609 KBytes  4.99 Mbits/sec
+[SUM]   0.00-1.00   sec  1.16 MBytes  9.75 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   1.00-2.00   sec   240 KBytes  1.96 Mbits/sec
+[  7]   1.00-2.00   sec   120 KBytes   984 Kbits/sec
+[  9]   1.00-2.00   sec   489 KBytes  4.00 Mbits/sec
+[SUM]   1.00-2.00   sec   849 KBytes  6.95 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   2.00-3.00   sec   240 KBytes  1.97 Mbits/sec
+[  7]   2.00-3.00   sec   120 KBytes   979 Kbits/sec
+[  9]   2.00-3.00   sec   480 KBytes  3.93 Mbits/sec
+[SUM]   2.00-3.00   sec   839 KBytes  6.88 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[  5]   3.00-4.00   sec   249 KBytes  2.04 Mbits/sec
+[  7]   3.00-4.00   sec   120 KBytes   983 Kbits/sec
+[  9]   3.00-4.00   sec   489 KBytes  4.01 Mbits/sec
+[SUM]   3.00-4.00   sec   858 KBytes  7.03 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+...
+```
+
+PBR and traffic shaping can be removed by running `remove-pbr-2-hop.sh`, `remove-pbr.sh` and `remove-tc.sh`.
 
 # Using gnmic to get gNMI stats
 

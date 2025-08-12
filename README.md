@@ -156,3 +156,7 @@ r3 interface eth1:
 ```
 gnmic -a clab-ibr-r3:7030 -u admin -p admsdsdin --insecure get --path /interfaces/interface[name=eth1]/state/counters/in-octets
 ```
+
+# Destroying the testbed
+
+Run `sudo clab destroy` in the main folder of the repo.

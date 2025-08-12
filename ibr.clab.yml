@@ -78,6 +78,7 @@ topology:
         - ip addr add 192.168.11.101/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.11.1
+        - bash -c "echo \"export PS1='\\h:\\w\\$ '\" >/root/.bashrc"
       labels:
         graph-posX: "605"
         graph-posY: "545"
@@ -96,6 +97,7 @@ topology:
         - ip addr add 192.168.12.101/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.12.1
+        - bash -c "echo \"export PS1='\\h:\\w\\$ '\" >/root/.bashrc"
       labels:
         graph-posX: "715"
         graph-posY: "665"
@@ -107,6 +109,7 @@ topology:
         - ip addr add 192.168.13.101/24 dev eth1
         - ip route del default
         - ip route add default via 192.168.13.1
+        - bash -c "echo \"export PS1='\\h:\\w\\$ '\" >/root/.bashrc"
       labels:
         graph-posX: "835"
         graph-posY: "545"

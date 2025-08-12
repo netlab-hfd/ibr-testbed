@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+xpanes -d -c "docker exec -it {} bash" clab-ibr-h{1,3}-1

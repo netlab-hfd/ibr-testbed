@@ -21,54 +21,42 @@
 # r2 r1 <-> r2 <-> h3 1-hop
 # r1 <-> r4 <-> r5 <-> r3 2-hop
 
+# Function to setup HTB
+setup_htb() {
+    local router=$1
+    local interface=$2
+    local rate=$3
+
+    #sudo ip netns exec "$router" tc qdisc del dev "$interface" root >/dev/null 2>&1
+    #sudo ip netns exec "$router" tc qdisc add dev "$interface" root handle 1: tbf rate $rate limit 25000000 burst 5000000 
+    sudo ip netns exec "$router" tc qdisc add dev "$interface" root handle 1: htb default 10
+    sudo ip netns exec "$router" tc class add dev "$interface" parent 1: classid 1:1 htb rate "$rate" ceil "$rate" #quantum 1514
+    sudo ip netns exec "$router" tc class add dev "$interface" parent 1:1 classid 1:10 htb rate "$rate" ceil "$rate" #quantum 1514
+    #sudo ip netns exec "$router" tc qdisc add dev "$interface" parent 1:10 handle 10: sfq #ecn headdrop flows 1024 limit 1000 perturb 60 redflowlimit 100000
+    #sudo ip netns exec "$router" tc qdisc add dev "$interface" parent 1:10 handle 10: fq_codel #ecn limit 1000
+    # tc -s -d -g qdisc show dev eth0 
+}
+
 # r1
-sudo ip netns exec clab-ibr-r1 tc qdisc del dev eth1 root
-sudo ip netns exec clab-ibr-r1 tc qdisc add dev eth1 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r1 tc class add dev eth1 parent 1: classid 1:10 htb rate 2mbit ceil 2mbit
-sudo ip netns exec clab-ibr-r1 tc qdisc del dev eth2 root
-sudo ip netns exec clab-ibr-r1 tc qdisc add dev eth2 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r1 tc class add dev eth2 parent 1: classid 1:10 htb rate 1mbit ceil 1mbit
-sudo ip netns exec clab-ibr-r1 tc qdisc del dev eth3 root
-sudo ip netns exec clab-ibr-r1 tc qdisc add dev eth3 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r1 tc class add dev eth3 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
-sudo ip netns exec clab-ibr-r1 tc qdisc del dev eth4 root
-sudo ip netns exec clab-ibr-r1 tc qdisc add dev eth4 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r1 tc class add dev eth4 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
+setup_htb clab-ibr-r1 eth1 2mbit
+setup_htb clab-ibr-r1 eth2 1mbit
+setup_htb clab-ibr-r1 eth3 4mbit
+setup_htb clab-ibr-r1 eth4 4mbit
 
 # r2
-sudo ip netns exec clab-ibr-r2 tc qdisc del dev eth1 root
-sudo ip netns exec clab-ibr-r2 tc qdisc add dev eth1 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r2 tc class add dev eth1 parent 1: classid 1:10 htb rate 2mbit ceil 2mbit
-sudo ip netns exec clab-ibr-r2 tc qdisc del dev eth2 root
-sudo ip netns exec clab-ibr-r2 tc qdisc add dev eth2 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r2 tc class add dev eth2 parent 1: classid 1:10 htb rate 2mbit ceil 2mbit
+setup_htb clab-ibr-r2 eth1 2mbit
+setup_htb clab-ibr-r2 eth2 2mbit
 
 # r3
-sudo ip netns exec clab-ibr-r3 tc qdisc del dev eth1 root
-sudo ip netns exec clab-ibr-r3 tc qdisc add dev eth1 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r3 tc class add dev eth1 parent 1: classid 1:10 htb rate 1mbit ceil 1mbit
-sudo ip netns exec clab-ibr-r3 tc qdisc del dev eth2 root
-sudo ip netns exec clab-ibr-r3 tc qdisc add dev eth2 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r3 tc class add dev eth2 parent 1: classid 1:10 htb rate 2mbit ceil 2mbit
-sudo ip netns exec clab-ibr-r3 tc qdisc del dev eth3 root
-sudo ip netns exec clab-ibr-r3 tc qdisc add dev eth3 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r3 tc class add dev eth3 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
-sudo ip netns exec clab-ibr-r3 tc qdisc del dev eth4 root
-sudo ip netns exec clab-ibr-r3 tc qdisc add dev eth4 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r3 tc class add dev eth4 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
+setup_htb clab-ibr-r3 eth1 1mbit
+setup_htb clab-ibr-r3 eth2 2mbit
+setup_htb clab-ibr-r3 eth3 4mbit
+setup_htb clab-ibr-r3 eth4 4mbit
 
 # r4
-sudo ip netns exec clab-ibr-r4 tc qdisc del dev eth1 root
-sudo ip netns exec clab-ibr-r4 tc qdisc add dev eth1 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r4 tc class add dev eth1 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
-sudo ip netns exec clab-ibr-r4 tc qdisc del dev eth2 root
-sudo ip netns exec clab-ibr-r4 tc qdisc add dev eth2 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r4 tc class add dev eth2 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
+setup_htb clab-ibr-r4 eth1 4mbit
+setup_htb clab-ibr-r4 eth2 4mbit
 
 # r5
-sudo ip netns exec clab-ibr-r5 tc qdisc del dev eth3 root
-sudo ip netns exec clab-ibr-r5 tc qdisc add dev eth3 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r5 tc class add dev eth3 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
-sudo ip netns exec clab-ibr-r5 tc qdisc del dev eth4 root
-sudo ip netns exec clab-ibr-r5 tc qdisc add dev eth4 root handle 1: htb default 10
-sudo ip netns exec clab-ibr-r5 tc class add dev eth4 parent 1: classid 1:10 htb rate 4mbit ceil 4mbit
+setup_htb clab-ibr-r5 eth3 4mbit
+setup_htb clab-ibr-r5 eth4 4mbit

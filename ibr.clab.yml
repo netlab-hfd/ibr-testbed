@@ -7,7 +7,7 @@ topology:
       kind: linux
       #image: quay.io/frrouting/frr:10.3.1
       #image: frr-gnmi-target:latest
-      image: flex/frr-gnmi-target:latest
+      image: flex/frr-gnmi-target:1sec
       binds:
         - r1/daemons:/etc/frr/daemons
         - r1/frr.conf:/etc/frr/frr.conf
@@ -19,7 +19,7 @@ topology:
       kind: linux
       #image: quay.io/frrouting/frr:10.3.1
       #image: frr-gnmi-target:latest
-      image: flex/frr-gnmi-target:latest
+      image: flex/frr-gnmi-target:1sec
       binds:
         - r2/daemons:/etc/frr/daemons
         - r2/frr.conf:/etc/frr/frr.conf
@@ -31,7 +31,7 @@ topology:
       kind: linux
       #image: quay.io/frrouting/frr:10.3.1
       #image: frr-gnmi-target:latest
-      image: flex/frr-gnmi-target:latest
+      image: flex/frr-gnmi-target:1sec
       binds:
         - r3/daemons:/etc/frr/daemons
         - r3/frr.conf:/etc/frr/frr.conf
@@ -43,7 +43,7 @@ topology:
       kind: linux
       #image: quay.io/frrouting/frr:10.3.1
       #image: frr-gnmi-target:latest
-      image: flex/frr-gnmi-target:latest
+      image: flex/frr-gnmi-target:1sec
       binds:
         - r4/daemons:/etc/frr/daemons
         - r4/frr.conf:/etc/frr/frr.conf
@@ -55,7 +55,7 @@ topology:
       kind: linux
       #image: quay.io/frrouting/frr:10.3.1
       #image: frr-gnmi-target:latest
-      image: flex/frr-gnmi-target:latest
+      image: flex/frr-gnmi-target:1sec
       binds:
         - r5/daemons:/etc/frr/daemons
         - r5/frr.conf:/etc/frr/frr.conf
